@@ -1,0 +1,9 @@
+preparation/VOCdevkit/
+.idea/
+__pycache__/
+Trainer/logs/*
+models/original/
+demo/test_files/
+trainer/logs/
+test/input/
+test/results/
