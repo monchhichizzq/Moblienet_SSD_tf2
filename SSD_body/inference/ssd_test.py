@@ -1,18 +1,21 @@
 import numpy as np
 import colorsys
 import os
-from nets import ssd
+from SSD_body.nets import ssd
 from PIL import Image,ImageFont, ImageDraw
 from tensorflow.keras.applications.imagenet_utils import preprocess_input
 from SSD_body.utils import BBoxUtility,letterbox_image,ssd_correct_boxes
 import tensorflow as tf
+
 class SSD(object):
     #--------------------------------------------#
     #   使用自己训练好的模型预测需要修改2个参数
     #   model_path和classes_path都需要修改！
     #--------------------------------------------#
     _defaults = {
-        "model_path": '../models/original/ssd_weights.h5',
+        # "model_path": '../models/original/ssd_weights.h5',
+        "backbone":'mobilenet',
+        "model_path": '../models/original/essay_mobilenet_ssd_weights.h5',
         "classes_path": '../preparation/data_txt/voc_classes.txt',
         "model_image_size" : (300, 300, 3),
         "confidence": 0.5,
@@ -57,7 +60,8 @@ class SSD(object):
         # 载入模型，如果原来的模型里已经包括了模型结构则直接载入。
         # 否则先构建模型再载入
 
-        self.ssd_model = ssd.SSD300(self.model_image_size,self.num_classes)
+        self.ssd_model = ssd.SSD300(self.model_image_size, self.backbone, self.num_classes)
+        self.ssd_model.summary()
         self.ssd_model.load_weights(self.model_path,by_name=True)
 
         self.ssd_model.summary()

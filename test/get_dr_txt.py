@@ -1,10 +1,12 @@
 #----------------------------------------------------#
 #   获取测试集的detection-result和images-optional
-#   具体视频教程可查看
-#   https://www.bilibili.com/video/BV1zE411u7Vw
 #----------------------------------------------------#
+import sys
+sys.path.append("..")
 import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = "2"
 from SSD_body.inference.ssd_test import SSD
 from PIL import Image
 from tensorflow.keras.applications.imagenet_utils import preprocess_input
