@@ -1,4 +1,5 @@
 preparation/VOCdevkit/
+preparation/kitti_voc/
 .idea/
 __pycache__/
 Trainer/logs/*

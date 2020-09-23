@@ -17,13 +17,13 @@ from SSD_body.nets.ssd_layers import Normalize
 from SSD_body.nets.ssd_layers import PriorBox
 
 
-def SSD300(input_shape, backbone='mobilenet', num_classes=21):
+def SSD300(input_shape, backbone='mobilenet', num_classes=9):
     # 300,300,3
     input_tensor = Input(shape=input_shape)
     img_size = (input_shape[1], input_shape[0])
 
     # SSD结构,net字典
-    if backbone is 'VGG16':
+    if backbone is 'vgg16':
         net = VGG16(input_tensor)
         print('Import VGG16 as backbone for SSD')
         # -----------------------将提取到的主干特征进行处理---------------------------#

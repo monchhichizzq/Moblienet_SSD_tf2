@@ -15,8 +15,9 @@ class SSD(object):
     _defaults = {
         # "model_path": '../models/original/ssd_weights.h5',
         "backbone":'mobilenet',
-        "model_path": '../models/original/essay_mobilenet_ssd_weights.h5',
-        "classes_path": '../preparation/data_txt/voc_classes.txt',
+        # "model_path": '../models/original/essay_mobilenet_ssd_weights.h5',
+        "model_path": '../Trainer/logs/ep071-loss2.067-val_loss2.070.h5',
+        "classes_path": '../preparation/data_txt/kitti_classes.txt',
         "model_image_size" : (300, 300, 3),
         "confidence": 0.5,
     }

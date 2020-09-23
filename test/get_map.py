@@ -15,8 +15,8 @@ import numpy as np
 MINOVERLAP = 0.5 # default value (defined in the PASCAL VOC2012 challenge)
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-na', '--no-animation', help="no animation is shown.", action="store_true")
-parser.add_argument('-np', '--no-plot', help="no plot is shown.", action="store_true")
+parser.add_argument('-na', '--no-animation', default=False, help="no animation is shown.", action="store_true")
+parser.add_argument('-np', '--no-plot', default=False, help="no plot is shown.", action="store_true")
 parser.add_argument('-q', '--quiet', help="minimalistic console output.", action="store_true")
 # argparse receiving list of classes to be ignored
 parser.add_argument('-i', '--ignore', nargs='+', type=str, help="ignore a list of classes.")
@@ -51,6 +51,7 @@ GT_PATH = os.path.join(os.getcwd(), 'input', 'ground-truth')
 DR_PATH = os.path.join(os.getcwd(), 'input', 'detection-results')
 # if there are no images then no animation can be shown
 IMG_PATH = os.path.join(os.getcwd(), 'input', 'images-optional')
+
 if os.path.exists(IMG_PATH): 
     for dirpath, dirnames, files in os.walk(IMG_PATH):
         if not files:
@@ -62,6 +63,7 @@ else:
 # try to import OpenCV if the user didn't choose the option --no-animation
 show_animation = False
 if not args.no_animation:
+
     try:
         import cv2
         show_animation = True
@@ -462,6 +464,7 @@ dr_files_list = glob.glob(DR_PATH + '/*.txt')
 dr_files_list.sort()
 
 for class_index, class_name in enumerate(gt_classes):
+    # print(class_index, class_name)
     bounding_boxes = []
     for txt_file in dr_files_list:
         #print(txt_file)
@@ -520,8 +523,11 @@ with open(results_files_path + "/results.txt", 'w') as results_file:
         for idx, detection in enumerate(dr_data):
             file_id = detection["file_id"]
             if show_animation:
+
                 # find ground truth image
+
                 ground_truth_img = glob.glob1(IMG_PATH, file_id + ".*")
+
                 #tifCounter = len(glob.glob1(myPath,"*.tif"))
                 if len(ground_truth_img) == 0:
                     error("Error. Image not found with id: " + file_id)

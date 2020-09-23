@@ -39,6 +39,7 @@ class MultiboxLoss(object):
         # batch_size,8732,21 -> batch_size,8732
         conf_loss = self._softmax_loss(y_true[:, :, 4:-8],
                                        y_pred[:, :, 4:-8])
+
         # 框的位置的loss
         # batch_size,8732,4 -> batch_size,8732
         loc_loss = self._l1_smooth_loss(y_true[:, :, :4],
@@ -217,8 +218,10 @@ class Generator(object):
                         continue
                     
                     y = np.concatenate([boxes,one_hot_label],axis=-1)
+                    # print('y', tf.shape(y))
 
                 y = self.bbox_util.assign_boxes(y)
+                # print('y', tf.shape(y))
                 inputs.append(img)               
                 targets.append(y)
                 if len(targets) == self.batch_size:
@@ -226,5 +229,6 @@ class Generator(object):
                     tmp_targets = np.array(targets)
                     inputs = []
                     targets = []
+                    # print(tf.shape(preprocess_input(tmp_inp)), tf.shape(tmp_targets))
                     yield preprocess_input(tmp_inp), tmp_targets
 

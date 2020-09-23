@@ -1,25 +1,25 @@
 import os
 import argparse
 import xml.etree.ElementTree as ET
-
+from tqdm import tqdm
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='This a script to generate train, test, val dataset, the generated txt file will be used for yolo training')
-    parser.add_argument('-name', default="VOC_2007", help="Dataset name", action="store_true")
-    parser.add_argument('-trainval_input_dir',default="VOCdevkit/VOCtrainval_06-Nov-2007/VOCdevkit/VOC2007",
+    parser.add_argument('-name', default="kitti_obj", help="Dataset name", action="store_true")
+    parser.add_argument('-trainval_input_dir',default="kitti_voc/",
                         help="Read trainval dataset annotations", action="store_true")
-    parser.add_argument('-test_input_dir', default="VOCdevkit/VOCtest_06-Nov-2007/VOCdevkit/VOC2007",
+    parser.add_argument('-test_input_dir', default="kitti_voc/",
                         help="Read test dataset annotations", action="store_true")
     parser.add_argument('-save', default='data_txt', help="Txt file generated for yolo training and test", action="store_true")
     args = parser.parse_args()
     return args
 
 def convert_annotation(image_id, list_file, input_dir_path):
-    print(os.path.join(input_dir_path, 'Annotations/%s.xml'%(image_id)))
+    # print(os.path.join(input_dir_path, 'Annotations/%s.xml'%(image_id)))
     in_file = open(os.path.join(input_dir_path, 'Annotations/%s.xml'%(image_id)))
     tree=ET.parse(in_file)
     root = tree.getroot()
-    list_file.write(os.path.join(current_path, input_dir_path, 'JPEGImages/%s.jpg'%(image_id)))
+    list_file.write(os.path.join(current_path, input_dir_path, 'JPEGImages/%s.png'%(image_id)))
     for obj in root.iter('object'):
         difficult = obj.find('difficult').text
         cls = obj.find('name').text
@@ -34,12 +34,13 @@ def convert_annotation(image_id, list_file, input_dir_path):
 
 def save_data_txt(input_dir_path, sets):
     for name, image_set in sets:
-        print(os.path.join(input_dir_path, 'ImageSets','Main','%s.txt'%(image_set)))
+        # print(os.path.join(input_dir_path, 'ImageSets','Main','%s.txt'%(image_set)))
         image_ids = open(os.path.join(input_dir_path, 'ImageSets', 'Main','%s.txt'%(image_set))).read().strip().split()
         list_file = open(os.path.join(save_path, '%s_%s.txt'%(args.name, image_set)), 'w')
-        for image_id in image_ids:
+        for image_id in tqdm(image_ids):
             convert_annotation(image_id, list_file, input_dir_path)
         list_file.close()
+
 
 if __name__=='__main__':
     current_path = os.getcwd()
@@ -47,11 +48,13 @@ if __name__=='__main__':
 
     save_path = args.save
     os.makedirs(save_path, exist_ok=True)
-    classes = ["aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow", "diningtable",
-               "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"]
+    # classes = ["aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow", "diningtable",
+    #            "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"]
+    classes = ["Car", "Van", "Truck", "Pedestrian", "Person", "Cyclist", "Tram","Misc"]
 
     # Train/Val
-    trainval_sets=[(args.name, 'train'), (args.name, 'trainval'), (args.name, 'val')]
+    # trainval_sets=[(args.name, 'train'), (args.name, 'trainval'), (args.name, 'val')]
+    trainval_sets = [(args.name, 'trainval')]
     trainval_input_dir_path = args.trainval_input_dir
     save_data_txt(trainval_input_dir_path, trainval_sets)
 
