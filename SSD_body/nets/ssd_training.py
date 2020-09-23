@@ -30,14 +30,26 @@ class MultiboxLoss(object):
                                       axis=-1)
         return softmax_loss
 
+    def _focal_loss(self, y_true, y_pred, alpha=0.25, gamma=2):
+        y_pred = tf.maximum(y_pred, 1e-7)
+        focal_loss = -tf.reduce_sum(alpha*tf.pow(tf.subtract(tf.constant(1.), y_true), gamma) * tf.math.log(y_pred),
+                                      axis=-1)
+        return focal_loss
+
     def compute_loss(self, y_true, y_pred):
         batch_size = tf.shape(y_true)[0]
         num_boxes = tf.cast(tf.shape(y_true)[1],tf.float32)
 
         # 计算所有的loss
+        # SSD 输出
+        # mbox_loc_final: (batch_size, 2278, 4)
+        # mbox_conf_final: (batch_size, 2278, 9)
+        # mbox_priorbox: (batch_size, 2278, 8)
         # 分类的loss
         # batch_size,8732,21 -> batch_size,8732
-        conf_loss = self._softmax_loss(y_true[:, :, 4:-8],
+        # conf_loss = self._softmax_loss(y_true[:, :, 4:-8],
+        #                                y_pred[:, :, 4:-8])
+        conf_loss = self._focal_loss(y_true[:, :, 4:-8],
                                        y_pred[:, :, 4:-8])
 
         # 框的位置的loss
@@ -46,12 +58,12 @@ class MultiboxLoss(object):
                                         y_pred[:, :, :4])
 
         # 获取所有的正标签的loss
-        # 每一张图的pos的个数
+        # 每一个batch的pos的个数
         num_pos = tf.reduce_sum(y_true[:, :, -8], axis=-1)
-        # 每一张图的pos_loc_loss
+        # 每一个batch的pos_loc_loss
         pos_loc_loss = tf.reduce_sum(loc_loss * y_true[:, :, -8],
                                      axis=1)
-        # 每一张图的pos_conf_loss
+        # 每一个batch的pos_conf_loss
         pos_conf_loss = tf.reduce_sum(conf_loss * y_true[:, :, -8],
                                       axis=1)
 
